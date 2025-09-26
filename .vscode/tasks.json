@@ -1,0 +1,35 @@
+﻿{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "HoI4: Generate State Map",
+      "type": "shell",
+      "command": "hoi4modtools-statemap",
+      "presentation": {
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "HoI4: Add Focus GFX",
+      "type": "shell",
+      "command": "hoi4modtools-focusgfx",
+      "presentation": {
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "HoI4: Add Localisation",
+      "type": "shell",
+      "command": "hoi4modtools-localisation",
+      "presentation": {
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+﻿# Default PyCharm exclusions
+workspace.xml
+tasks.xml
+usage.statistics.xml
+dictionaries/
+shelf/
+httpRequests/
+inspectionProfiles/Project_Default.xml

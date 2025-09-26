@@ -9,6 +9,8 @@ import pickle
 import traceback
 import itertools
 import colorsys
+from pathlib import Path
+from importlib import resources
 
 DEPENDENCY_ERRORS = []
 
@@ -16,20 +18,20 @@ try:
     import p_tqdm
     from tqdm import tqdm
 except Exception:
-    DEPENDENCY_ERRORS.append("Missing dependency: p_tqdm (and tqdm). Install with 'python -m pip install p_tqdm' or use 'python -m pip install -r requirements-python3.txt'.")
+    DEPENDENCY_ERRORS.append("Missing dependency: p_tqdm (and tqdm). Install with 'python -m pip install p_tqdm' or use 'python -m pip install hoi4modtools'.")
     p_tqdm = None
     tqdm = None
 
 try:
     from PIL import Image, ImageDraw, ImageFont
 except Exception:
-    DEPENDENCY_ERRORS.append("Missing dependency: pillow. Install with 'python -m pip install pillow' or use 'python -m pip install -r requirements-python3.txt'.")
+    DEPENDENCY_ERRORS.append("Missing dependency: pillow. Install with 'python -m pip install pillow' or use 'python -m pip install hoi4modtools'.")
     Image = ImageDraw = ImageFont = None
 
 try:
     import numpy as np
 except Exception:
-    DEPENDENCY_ERRORS.append("Missing dependency: numpy. Install with 'python -m pip install numpy' or use 'python -m pip install -r requirements-python3.txt'.")
+    DEPENDENCY_ERRORS.append("Missing dependency: numpy. Install with 'python -m pip install numpy' or use 'python -m pip install hoi4modtools'.")
     np = None
 
 try:
@@ -37,7 +39,7 @@ try:
     import matplotlib.pyplot as plt
     import matplotlib.patches as mpatches
 except Exception:
-    DEPENDENCY_ERRORS.append("Missing dependency: seaborn/matplotlib. Install with 'python -m pip install seaborn matplotlib' or use 'python -m pip install -r requirements-python3.txt'.")
+    DEPENDENCY_ERRORS.append("Missing dependency: seaborn/matplotlib. Install with 'python -m pip install seaborn matplotlib' or use 'python -m pip install hoi4modtools'.")
     sns = None
     plt = None
     mpatches = None
@@ -90,6 +92,21 @@ def ensure_dependencies():
     if DEPENDENCY_ERRORS:
         raise DependencyError("\n".join(DEPENDENCY_ERRORS))
 
+
+
+
+DEFAULT_COLORS_RESOURCE = "hoi4statemapgenerator_colors.pickle"
+
+
+def _default_colors_path() -> str:
+    package = f"{__package__}.data" if __package__ else "hoi4modtools.data"
+    try:
+        return str(resources.files(package).joinpath(DEFAULT_COLORS_RESOURCE))
+    except ModuleNotFoundError:
+        return str((Path(__file__).resolve().parent / "data" / DEFAULT_COLORS_RESOURCE))
+
+
+DEFAULT_COLORS_PATH = _default_colors_path()
 
 
 #############################
@@ -674,7 +691,7 @@ def build_parser():
     parser.add_argument(
         '-c',
         '--colors',
-        default='hoi4statemapgenerator_colors.pickle',
+        default=DEFAULT_COLORS_PATH,
         help='Name of pregenerated colors.pickle file (Default: hoi4statemapgenerator_colors.pickle)'
     )
     parser.add_argument(
@@ -845,7 +862,7 @@ if __name__ == '__main__':
         main()
     except DependencyError as exc:
         print(exc)
-        print('\nInstall the required packages with:\n  python -m pip install -r requirements-python3.txt')
+        print('\nInstall the required packages with:\n  python -m pip install hoi4modtools')
         exit_code = 1
     except SystemExit as exc:
         if isinstance(exc.code, str):

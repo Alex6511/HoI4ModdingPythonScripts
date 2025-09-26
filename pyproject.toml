@@ -1,0 +1,56 @@
+﻿[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hoi4modtools"
+version = "0.1.0"
+description = "Utility scripts for Hearts of Iron IV modding"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+authors = [
+  { name = "Yard1" },
+  { name = "Community Maintainers" }
+]
+dependencies = [
+  "p_tqdm",
+  "tqdm",
+  "pillow",
+  "numpy",
+  "seaborn",
+  "matplotlib",
+  "unidecode",
+]
+
+[project.scripts]
+hoi4modtools-statemap = "hoi4modtools.statemap:main"
+hoi4modtools-focusgfx = "hoi4modtools.focusgfx:main"
+hoi4modtools-focusshine = "hoi4modtools.focusshine:main"
+hoi4modtools-ideagfx = "hoi4modtools.ideagfx:main"
+hoi4modtools-localisation = "hoi4modtools.localisation:main"
+hoi4modtools-manpower = "hoi4modtools.manpower:main"
+hoi4modtools-transfertech = "hoi4modtools.transfertech:main"
+hoi4modtools-fileformatter = "hoi4modtools.fileformatter:main"
+hoi4modtools-newsheader = "hoi4modtools.newsheader:main"
+hoi4modtools-usa-election = "hoi4modtools.usa_election:main"
+hoi4modtools-minister = "hoi4modtools.minister_converter:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+hoi4modtools = ["data/*"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7",
+  "ruff>=0.5"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
