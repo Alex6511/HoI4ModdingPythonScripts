@@ -10,29 +10,45 @@ import traceback
 import itertools
 import colorsys
 
+DEPENDENCY_ERRORS = []
+
 try:
     import p_tqdm
     from tqdm import tqdm
-except:
-    sys.exit("Requires p_tqdm pip package to be installed. Run:\npip install p_tqdm\nor\npip3.6 install p_tqdm\ndepending on your installation and start the script again.\nMore info on installing packages: https://docs.python.org/3/installing/index.html")
+except Exception:
+    DEPENDENCY_ERRORS.append("Missing dependency: p_tqdm (and tqdm). Install with 'python -m pip install p_tqdm' or use 'python -m pip install -r requirements-python3.txt'.")
+    p_tqdm = None
+    tqdm = None
 
 try:
     from PIL import Image, ImageDraw, ImageFont
-except:
-    sys.exit("Requires pillow pip package to be installed. Run:\npip install pillow\nor\npip3.6 install pillow\ndepending on your installation and start the script again.\nMore info on installing packages: https://docs.python.org/3/installing/index.html")
+except Exception:
+    DEPENDENCY_ERRORS.append("Missing dependency: pillow. Install with 'python -m pip install pillow' or use 'python -m pip install -r requirements-python3.txt'.")
+    Image = ImageDraw = ImageFont = None
 
 try:
     import numpy as np
-except:
-    sys.exit("Requires numpy pip package to be installed. Run:\npip install numpy\nor\npip3.6 install numpy\ndepending on your installation and start the script again.\nMore info on installing packages: https://docs.python.org/3/installing/index.html")
+except Exception:
+    DEPENDENCY_ERRORS.append("Missing dependency: numpy. Install with 'python -m pip install numpy' or use 'python -m pip install -r requirements-python3.txt'.")
+    np = None
 
 try:
     import seaborn as sns
     import matplotlib.pyplot as plt
     import matplotlib.patches as mpatches
-except:
-    sys.exit("Requires seaborn pip package to be installed. Run:\npip install seaborn\nor\npip3.6 install seaborn\ndepending on your installation and start the script again.\nMore info on installing packages: https://docs.python.org/3/installing/index.html")
+except Exception:
+    DEPENDENCY_ERRORS.append("Missing dependency: seaborn/matplotlib. Install with 'python -m pip install seaborn matplotlib' or use 'python -m pip install -r requirements-python3.txt'.")
+    sns = None
+    plt = None
+    mpatches = None
 
+
+class DependencyError(RuntimeError):
+    """Raised when required third-party packages are missing."""
+    pass
+
+
+args = None
 
 #############################
 ###
@@ -70,10 +86,30 @@ except:
 ###   -f FONT, --font FONT  Name of font to use (Default: ARIALN.TTF)
 ###   -nid, --no_ids        Do not put IDs on the map (Default: False)
 ###
+def ensure_dependencies():
+    if DEPENDENCY_ERRORS:
+        raise DependencyError("\n".join(DEPENDENCY_ERRORS))
+
+
+
 #############################
 
 BLUE_RBG = (68, 107, 163)
 MANPOWER_STEPS = 10
+
+MODE_DESCRIPTIONS = {
+    0: "States",
+    1: "Population per pixel",
+    2: "Political",
+    3: "Total factories",
+    4: "Civilian factories",
+    5: "Military factories",
+    6: "Infrastructure",
+    7: "Dockyards",
+    8: "Industry per capita (by country)",
+    9: "Industry per capita (by state)",
+    10: "Manpower per factory",
+}
 
 def readable_dir(prospective_dir):
   if not os.path.isdir(prospective_dir):
@@ -475,6 +511,8 @@ def generate_legend_and_colors(steps, data_list, title_str, mode, palette="Reds"
 #############################
 
 def main():
+    ensure_dependencies()
+
     water_color = [(1/255)*BLUE_RBG[0], (1/255)*BLUE_RBG[1], (1/255)*BLUE_RBG[2]]
 
     #print(sns.color_palette("Blues"))
@@ -483,7 +521,7 @@ def main():
 
     mode = int(args.mode)
     if mode < 0 or mode > 10:
-        sys.exit("Wrong mode - must be between 0 and 9")
+        sys.exit("Wrong mode - must be between 0 and 10")
 
     try:
         dir = readable_dir(args.states)
@@ -618,23 +656,209 @@ def main():
     print("Saving file " + args.output + "...")
     province_map.save(args.output, "PNG")
 
+def build_parser():
+    parser = argparse.ArgumentParser(
+        description='Given valid provinces.bmp, definition.csv files and a folder of state history files (or strategic region files), generate an image containing a map of states with their IDs.'
+    )
+    parser.add_argument(
+        'mode',
+        help='Mode: 0 - states, 1 - population per pixel, 2 - political, 3 - total factories, 4 - civ factories, 5 - mil factories, 6 - infra, 7 - nav factories, 8 - industry per capita, 9 - industry per capita (per state), 10 - manpower per factory'
+    )
+    parser.add_argument('provinces', help='Path to provinces.bmp file')
+    parser.add_argument('definition', help='Path to definition.csv file')
+    parser.add_argument(
+        'states',
+        help="Path to 'history/states' or 'map/strategicregions' folder"
+    )
+    parser.add_argument('output', help='Name of output file')
+    parser.add_argument(
+        '-c',
+        '--colors',
+        default='hoi4statemapgenerator_colors.pickle',
+        help='Name of pregenerated colors.pickle file (Default: hoi4statemapgenerator_colors.pickle)'
+    )
+    parser.add_argument(
+        '-f',
+        '--font',
+        default='ARIALN.TTF',
+        help='Name of font to use (Default: ARIALN.TTF)'
+    )
+    parser.add_argument(
+        '-nid',
+        '--no_ids',
+        action='store_true',
+        default=False,
+        help='Do not put IDs on the map (Default: False)'
+    )
+    parser.add_argument(
+        '--pause-on-exit',
+        action='store_true',
+        help='Wait for Enter before closing (useful when launching from a double-clicked window).'
+    )
+    return parser
+
+
+def wait_for_exit():
+    try:
+        input("\nPress Enter to close this window...")
+    except EOFError:
+        pass
+
+
+def _clean_input_path(value):
+    return value.strip().strip('"').strip("'")
+
+
+def _validate_mode(value):
+    try:
+        number = int(value)
+    except ValueError:
+        return 'Please enter a number between 0 and 10.'
+    if number < 0 or number > 10:
+        return 'Mode must be between 0 and 10.'
+    return None
+
+
+def _validate_existing_file(path):
+    expanded = os.path.expanduser(path)
+    if not os.path.isfile(expanded):
+        return "File '%s' was not found." % expanded
+    return None
+
+
+def _validate_existing_dir(path):
+    expanded = os.path.expanduser(path)
+    if not os.path.isdir(expanded):
+        return "Directory '%s' was not found." % expanded
+    return None
+
+
+def _validate_output_path(path):
+    expanded = os.path.expanduser(path)
+    directory = os.path.dirname(expanded) or '.'
+    if not os.path.isdir(directory):
+        return "Directory '%s' does not exist." % os.path.abspath(directory)
+    return None
+
+
+def _prompt_with_validation(message, default=None, validator=None, allow_empty=False):
+    while True:
+        raw = input(message)
+        if raw is None:
+            raw = ''
+        value = raw.strip()
+        if not value:
+            if default is not None:
+                value = default
+            elif allow_empty:
+                return ''
+            else:
+                print('A value is required.')
+                continue
+        cleaned = _clean_input_path(value)
+        if validator:
+            error = validator(cleaned)
+            if error:
+                print(error)
+                continue
+        return cleaned
+
+
+def _prompt_optional(message, default=None, validator=None):
+    while True:
+        raw = input(message)
+        if raw is None:
+            raw = ''
+        value = raw.strip()
+        if not value:
+            return default, True
+        cleaned = _clean_input_path(value)
+        if validator:
+            error = validator(cleaned)
+            if error:
+                print(error)
+                continue
+        return cleaned, False
+
+
+def _prompt_yes_no(message, default=True):
+    suffix = 'Y/n' if default else 'y/N'
+    while True:
+        raw = input(f"{message} ({suffix}): ").strip().lower()
+        if not raw:
+            return default
+        if raw in ('y', 'yes'):
+            return True
+        if raw in ('n', 'no'):
+            return False
+        print('Please answer with y or n.')
+
+
+def _collect_interactive_args(parser):
+    print('No command line arguments detected. Starting interactive mode. Press Ctrl+C to cancel.')
+    print('Tip: you can drag-and-drop files into this window to fill in paths.')
+    print()
+    print('Available modes:')
+    for mode_id in sorted(MODE_DESCRIPTIONS):
+        print(f"  {mode_id}: {MODE_DESCRIPTIONS[mode_id]}")
+    print()
+    mode = _prompt_with_validation('Select mode [0]: ', default='0', validator=_validate_mode)
+    provinces = _prompt_with_validation('Path to provinces.bmp file: ', validator=_validate_existing_file)
+    definition = _prompt_with_validation('Path to definition.csv file: ', validator=_validate_existing_file)
+    states = _prompt_with_validation("Path to 'history/states' or 'map/strategicregions' folder: ", validator=_validate_existing_dir)
+    output = _prompt_with_validation('Output image filename [out.png]: ', default='out.png', validator=_validate_output_path)
+    colors_default = parser.get_default('colors')
+    colors_prompt = f"Colors pickle [{colors_default}] (Enter to keep default): "
+    colors_value, used_default_colors = _prompt_optional(colors_prompt, default=colors_default, validator=_validate_existing_file)
+    font_default = parser.get_default('font')
+    font_prompt = f"Font name [{font_default}] (Enter to keep default): "
+    font_value, used_default_font = _prompt_optional(font_prompt, default=font_default)
+    include_ids = _prompt_yes_no('Include state ID labels on the map?', default=True)
+    args_list = [mode, provinces, definition, states, output]
+    if not used_default_colors and colors_value:
+        args_list.extend(['--colors', colors_value])
+    if not used_default_font and font_value:
+        args_list.extend(['--font', font_value])
+    if not include_ids:
+        args_list.append('--no_ids')
+    args_list.append('--pause-on-exit')
+    return args_list
+
+
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Given valid provinces.bmp, definition.csv files and a folder of state history files (or strategic region files), generate an image containing a map of states with their IDs.')
-    parser.add_argument( 'mode',
-                        help='Mode: 0 - states, 1 - population per pixel, 2 - political, 3 - total factories, 4 - civ factories, 5 - mil factories, 6 - infra, 7 - nav factories, 8 - industry per capita')
-    parser.add_argument('provinces',
-                        help='Path to provinces.bmp file')
-    parser.add_argument( 'definition',
-                        help='Path to definition.csv file')
-    parser.add_argument( 'states',
-                        help='Path to \'history/states\' or \'map/strategicregions\' folder')
-    parser.add_argument( 'output',
-                        help='Name of output file')
-    parser.add_argument('-c', '--colors', required=False, default="hoi4statemapgenerator_colors.pickle",
-                        help='Name of pregenerated colors.pickle file (Default: hoi4statemapgenerator_colors.pickle)')
-    parser.add_argument('-f', '--font', required=False, default="ARIALN.TTF",
-                        help='Name of font to use (Default: ARIALN.TTF)')
-    parser.add_argument( '-nid', '--no_ids', action='store_true', required=False, default=False,
-                        help='Do not put IDs on the map (Default: False)')
-    args = parser.parse_args()
-    main()
+    parser = build_parser()
+    raw_args = sys.argv[1:]
+    interactive = False
+    if not raw_args:
+        interactive = True
+        try:
+            raw_args = _collect_interactive_args(parser)
+        except KeyboardInterrupt:
+            print('\nAborted by user.')
+            wait_for_exit()
+            sys.exit(1)
+    pause_requested = '--pause-on-exit' in raw_args
+    exit_code = 0
+    try:
+        args = parser.parse_args(raw_args)
+        pause_requested = pause_requested or getattr(args, 'pause_on_exit', False)
+        main()
+    except DependencyError as exc:
+        print(exc)
+        print('\nInstall the required packages with:\n  python -m pip install -r requirements-python3.txt')
+        exit_code = 1
+    except SystemExit as exc:
+        if isinstance(exc.code, str):
+            if exc.code:
+                print(exc.code)
+            exit_code = 1
+        else:
+            exit_code = exc.code if exc.code is not None else 0
+    except Exception:
+        traceback.print_exc()
+        exit_code = 1
+    finally:
+        if interactive or pause_requested:
+            wait_for_exit()
+    sys.exit(exit_code if exit_code is not None else 0)
+

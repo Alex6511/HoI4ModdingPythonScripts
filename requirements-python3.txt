@@ -1,0 +1,8 @@
+p_tqdm
+tqdm
+pillow
+numpy
+seaborn
+matplotlib
+unidecode
+
