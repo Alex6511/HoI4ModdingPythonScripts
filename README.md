@@ -1,4 +1,4 @@
-﻿# HoI4ModdingPythonScripts
+# HoI4ModdingPythonScripts
 Collection of Python 3 utilities that automate repetitive Hearts of Iron IV modding tasks.
 
 All scripts live in the `python3/` directory:
@@ -18,7 +18,7 @@ All scripts live in the `python3/` directory:
 
 ## License
 
-- Current commits (this change and later) are released under the GNU Affero General Public License v3.0. See `LICENSE` or `licenses/LICENSE-AGPL-3.0`.
+- Current commits at or after `78180abe3c723af9e4e1bba3c50e1688e15f7feb` are released under the GNU Affero General Public License v3.0. See `LICENSE` or `licenses/LICENSE-AGPL-3.0`.
 - Historical commits up to `f487423b2fb01c51fa1a7350f119c66cddd8aceb` remain under the MIT License; the MIT text is archived at `licenses/LICENSE-MIT`.
 
 ## Getting Started
