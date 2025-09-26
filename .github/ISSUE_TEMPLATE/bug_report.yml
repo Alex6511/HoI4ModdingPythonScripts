@@ -1,0 +1,187 @@
+name: Bug Report
+description: Report a problem with one of the HoI4 modding scripts
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for reporting a bug!
+
+        Please fill out this form as completely as possible. Don't worry if you're not sure about technical details - just describe what happened in your own words.
+
+        This form will help both you and the developer understand exactly what went wrong.
+
+        **⚠️ IMPORTANT NOTICE:** This software is provided "as is" without warranty of any kind. The developer is a volunteer and may not respond to this report quickly or at all. By submitting this report, you acknowledge that there is no guarantee of a fix or response.
+
+  - type: dropdown
+    id: script
+    attributes:
+      label: Which script has the problem?
+      description: Select the script you were using when you encountered the bug
+      options:
+        - clausewitzlocandmissing.py - Localization checker
+        - hoi4Error.py - Error log reader
+        - hoi4Validator.py - Mod file validator
+        - hoi4ideacreator.py - Idea creator
+        - hoi4focusbuilder.py - Focus tree builder
+        - Other/Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What were you trying to do?
+      description: |
+        Tell us what you were trying to accomplish with the script.
+        Example: "I was trying to check my mod's localization files for missing text"
+      placeholder: I was trying to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: What exact steps did you take?
+      description: |
+        Please list the exact steps you took, in order. This helps us reproduce the problem.
+        Be as specific as possible - include file names, button clicks, commands typed, etc.
+      placeholder: |
+        1. I opened the script by double-clicking it
+        2. I selected my mod folder at C:\Users\MyName\Documents\Paradox Interactive\Hearts of Iron IV\mod\my_mod
+        3. I clicked the "Check Files" button
+        4. Then...
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+      description: Tell us what you thought the script would do
+      placeholder: I expected the script to show me a list of missing localization entries
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened instead?
+      description: |
+        Describe what the script did that was wrong or unexpected.
+        If you got an error message, please copy and paste it here (don't worry if you don't understand it).
+      placeholder: |
+        Instead of showing results, the script window closed immediately
+        OR
+        I got this error message: [paste error here]
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-message
+    attributes:
+      label: Error messages or unexpected output
+      description: |
+        If you saw any error messages, warnings, or unexpected text, paste them here.
+        Don't worry if it looks like gibberish - it will help the developer!
+      placeholder: |
+        Copy and paste any error messages here.
+        If the window closed too quickly, that's okay - just write "Window closed too quickly to read"
+      render: text
+
+  - type: textarea
+    id: mod-files
+    attributes:
+      label: Example of your mod files (if relevant)
+      description: |
+        If the bug relates to specific content in your mod files, please share a small example.
+        For example, if a focus tree isn't being read correctly, paste a few lines from your focus file.
+
+        **Important:** Only share what you're comfortable sharing - no need to paste entire files!
+      placeholder: |
+        Example from my focus tree file:
+        focus = {
+            id = my_focus_id
+            x = 5
+            y = 0
+        }
+      render: text
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does this happen?
+      options:
+        - Every time I try this
+        - Most of the time
+        - Sometimes (about half the time)
+        - Rarely
+        - This is the first time
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: What operating system are you using?
+      options:
+        - Windows 11
+        - Windows 10
+        - Windows 8/8.1
+        - Windows 7
+        - Mac OS
+        - Linux
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version (if you know it)
+      description: |
+        If you know your Python version, please share it. If not, leave blank.
+        You can find it by opening Command Prompt and typing: python --version
+      placeholder: "Example: Python 3.11.0 or Not sure"
+
+  - type: input
+    id: mod-name
+    attributes:
+      label: Name of your mod (optional)
+      description: If you're comfortable sharing, what's the name of the mod you're working on?
+      placeholder: "Example: Historical Accuracy Mod"
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Anything else that might help?
+      description: |
+        Add any other information that might help us understand or fix the problem.
+        For example:
+        - Did this work before and suddenly stop?
+        - Are you using any special characters or non-English text?
+        - Is your mod particularly large or complex?
+        - Screenshots can be very helpful if you have them!
+      placeholder: Any additional details...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      description: Please check these boxes before submitting
+      options:
+        - label: I've described what I was trying to do
+          required: true
+        - label: I've explained what went wrong
+          required: true
+        - label: I've included any error messages I saw (or noted if there weren't any)
+          required: true
+        - label: I understand the developer may not respond quickly or at all to this report
+          required: true
+        - label: I understand this software is provided "as is" without any warranty or guarantee of support
+          required: true

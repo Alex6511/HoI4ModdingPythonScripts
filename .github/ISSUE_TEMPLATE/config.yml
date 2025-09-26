@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discord Community
+    url: https://discord.com/invite/paradoxplaza
+    about: For general questions and quick help, consider joining the HoI4 modding community on Discord
+  - name: HoI4 Modding Wiki
+    url: https://hoi4.paradoxwikis.com/Modding
+    about: Check the official wiki for general HoI4 modding documentation

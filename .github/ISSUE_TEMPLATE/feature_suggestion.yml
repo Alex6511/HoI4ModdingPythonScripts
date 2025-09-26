@@ -1,0 +1,191 @@
+name: Feature Suggestion
+description: Suggest a new feature or improvement for the HoI4 modding scripts
+title: "[SUGGESTION] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for your suggestion!
+
+        Your ideas help make these tools better for everyone in the HoI4 modding community.
+
+        This form will help you explain your idea clearly so the developer can understand what you need and why it would be helpful.
+
+        **⚠️ IMPORTANT NOTICE:** This software is provided "as is" without warranty of any kind. The developer is a volunteer and may not respond to suggestions quickly or at all. There is no guarantee that any feature will be implemented. By submitting this suggestion, you acknowledge these limitations.
+
+  - type: dropdown
+    id: script
+    attributes:
+      label: Which script would this improve?
+      description: Select which script your suggestion relates to (or choose "New Script" for a completely new tool)
+      options:
+        - clausewitzlocandmissing.py - Localization checker
+        - hoi4Error.py - Error log reader
+        - hoi4Validator.py - Mod file validator
+        - hoi4ideacreator.py - Idea creator
+        - hoi4focusbuilder.py - Focus tree builder
+        - All scripts / General improvement
+        - New script idea (not an existing tool)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: |
+        Describe the challenge or tedious task you face when modding HoI4.
+        What takes too much time or is too difficult to do manually?
+      placeholder: |
+        Example: "When I create focus trees, I have to manually count grid positions for each focus, and I often make mistakes with the x and y coordinates"
+
+        OR
+
+        "I spend hours looking through my events to find which ones are missing localization"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe your suggested solution
+      description: |
+        How would you like the script to work? What would it do?
+        Don't worry about technical details - just describe it from a user's perspective.
+      placeholder: |
+        Example: "I'd like a visual grid where I can drag and drop focus icons, and the script automatically calculates the x and y positions"
+
+        OR
+
+        "The script could scan all my event files and create a list of which events need localization added"
+    validations:
+      required: true
+
+  - type: textarea
+    id: workflow
+    attributes:
+      label: How would you use this feature?
+      description: |
+        Walk us through how you imagine using this feature step-by-step.
+        This helps the developer understand your workflow.
+      placeholder: |
+        1. I would open the script
+        2. I would select my mod folder
+        3. I would click a button labeled "Check Events"
+        4. The script would show me a list of events missing localization
+        5. I could click on each one to see where it's located
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-method
+    attributes:
+      label: How do you currently handle this without the script?
+      description: |
+        Tell us how you currently solve this problem.
+        This helps us understand why the feature would save you time.
+      placeholder: |
+        Example: "Right now I have to open each event file in Notepad++ and manually search for event IDs, then check if they exist in my localization files. It takes hours for a large mod."
+
+  - type: dropdown
+    id: time-saved
+    attributes:
+      label: How much time would this save you?
+      description: Estimate how much time this feature would save in your modding workflow
+      options:
+        - Several hours per mod/update
+        - About an hour per mod/update
+        - 30-60 minutes per mod/update
+        - 15-30 minutes per mod/update
+        - Less than 15 minutes but would prevent errors
+        - Not sure, but it would be very helpful
+    validations:
+      required: true
+
+  - type: dropdown
+    id: other-users
+    attributes:
+      label: Would other modders find this useful?
+      description: Do you think other people in the HoI4 modding community would benefit from this?
+      options:
+        - Yes, this is a common problem many modders face
+        - Probably, I've seen others mention similar issues
+        - Maybe, it depends on the type of mod
+        - Not sure
+        - This is probably specific to my workflow
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples from your mod (optional)
+      description: |
+        If you have specific examples from your mod files that show why this feature would be helpful, share them here.
+        This is completely optional but can help the developer understand your needs better.
+      placeholder: |
+        Example: "I have 500+ events and checking them all for localization takes me 3-4 hours each update"
+
+        OR
+
+        "Here's a focus tree section that's hard to position manually:
+        focus = {
+          id = industrial_effort
+          x = 5
+          y = 0
+        }"
+      render: text
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Have you tried any alternatives?
+      description: |
+        Have you tried other tools or methods to solve this problem?
+        What did or didn't work about them?
+      placeholder: |
+        Example: "I tried using Excel to track my focuses but it's hard to visualize the tree structure"
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to you?
+      options:
+        - Critical - I can't effectively mod without this
+        - High - This would significantly improve my modding
+        - Medium - This would be nice to have
+        - Low - Just a convenience feature
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional information
+      description: |
+        Anything else you'd like to add?
+        - Screenshots or mockups of how you imagine it working
+        - Links to similar tools you've seen
+        - Other details that might help
+      placeholder: Any other details that might help...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I've explained the problem I'm trying to solve
+          required: true
+        - label: I've described how the feature would work
+          required: true
+        - label: I believe other modders would also find this useful
+          required: false
+        - label: I understand the developer may not respond to this suggestion quickly or at all
+          required: true
+        - label: I understand this software is provided "as is" without warranty and there is no guarantee this feature will be implemented
+          required: true
